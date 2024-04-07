@@ -10,7 +10,7 @@ class Command(BaseCommand):
     @staticmethod
     def json_read_categories():
         """Здесь мы получаем данные из фикстуры с категориями"""
-        with open("fixtures/catalog_data.json", encoding="utf-8") as file:
+        with open("fixtures/catalog_data.json", "r", encoding="utf-8") as file:
             data = json.load(file)
             category_data = []
             for item in data:

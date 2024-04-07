@@ -12,12 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import pathlib
 
-# from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
-
-# load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -85,6 +82,8 @@ DATABASES = {
         'NAME': 'catalog',
         'USER': 'postgres',
         'PASSWORD': '77777',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
