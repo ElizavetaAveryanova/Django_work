@@ -43,7 +43,7 @@ class Command(BaseCommand):
         for category in Command.json_read_categories():
             category_for_create.append(
                 Category(id=category["pk"],
-                         title=category["fields"]["title"],
+                         name=category["fields"]["title"],
                          description=category["fields"]["description"])
             )
 
@@ -54,7 +54,7 @@ class Command(BaseCommand):
         for product in Command.json_read_products():
             product_for_create.append(
                 Product(id=product["pk"],
-                        title=product["fields"]["title"],
+                        name=product["fields"]["title"],
                         description=product["fields"]["description"],
                         category=Category.objects.get(pk=product["fields"]["category"]),
                         price=product["fields"]["price"],
