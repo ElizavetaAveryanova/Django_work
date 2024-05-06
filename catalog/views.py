@@ -1,9 +1,11 @@
+from django.forms import inlineformset_factory
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, TemplateView, DetailView, CreateView, UpdateView, DeleteView
 from pytils.translit import slugify
 
-from catalog.models import Product, Category, Blog
+from catalog.forms import ProductForm, VersionForm
+from catalog.models import Product, Category, Blog, Version
 
 
 class CategoryListView(ListView):
@@ -29,6 +31,7 @@ class ContactsPageView(TemplateView):
 
 
 class ProductListView(ListView):
+    """Контроллер просмотра списка продуктов"""
     model = Product
 
     def get_queryset(self):
@@ -36,20 +39,52 @@ class ProductListView(ListView):
         queryset = queryset.filter(category_id=self.kwargs.get('pk'))
         return queryset
 
-    def get_context_data(self, *args, **kwargs):
-        category_item = Category.objects.get(pk=self.kwargs.get('pk'))
-        context_data = super().get_context_data(*args, **kwargs)
-        context_data['title'] = f'Категория: {category_item.name}'
-        return context_data
-
-
 
 class ProductDetailView(DetailView):
+        """Контроллер просмотра отдельного продукта"""
+        model = Product
+
+
+class ProductCreateView(CreateView):
+    """Контроллер создания продукта"""
     model = Product
-    template_name = 'catalog/product.html'
-    extra_context = {
-        'title': 'Описание товара'
-    }
+    form_class = ProductForm
+    success_url = reverse_lazy('catalog:product_list')
+
+class ProductUpdateView(UpdateView):
+    """Контроллер редактирования продукта"""
+    model = Product
+    form_class = ProductForm
+    success_url = reverse_lazy('catalog:product_list')
+
+    def get_context_data(self, **kwargs):  # формирование формсета с версиями продукта
+        context_data = super().get_context_data(**kwargs)
+        VersionFormset = inlineformset_factory(Product, Version, form=VersionForm, extra=1)
+        if self.request.method == 'POST':
+            context_data['formset'] = VersionFormset(self.request.POST, instance=self.object)
+        else:
+            context_data['formset'] = VersionFormset(instance=self.object)
+        return context_data
+
+    def form_valid(self, form):
+        formset = self.get_context_data()['formset']
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+
+        # проверка наличия единственной активной версии у продукта
+        active_versions = Version.objects.filter(product=self.object, is_active=True)
+        if active_versions.count() > 1:
+            form.add_error(None, 'Выберите только одну активную версию')
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+class ProductDeleteView(DeleteView):
+    """Контроллер удаления продукта"""
+    model = Product
+    success_url = reverse_lazy('catalog:product_list')
 
 class BlogCreateView(CreateView):
     model = Blog

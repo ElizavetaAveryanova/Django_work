@@ -2,7 +2,6 @@
 {% load my_tags %}
 
 {% block content %}
-
 <div class="row text-center">
     {% for object in object_list %}
     <div class="col-3">
@@ -12,7 +11,7 @@
             </div>
             <div class="card-body">
                 {{ object.description|truncatechars:30 }}<br>
-                <a href="{% url 'catalog:category_products' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-primary">Товары</a>
+                <a href="{% url 'catalog:product_list' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-primary">Товары</a>
             </div>
         </div>
     </div>
