@@ -52,12 +52,18 @@ class ProductCreateView(CreateView):
     success_url = reverse_lazy('catalog:product_list_category')
     # success_url = reverse_lazy('catalog:product_list_category', kwargs={'pk': self.object.category.pk})
 
+    def get_success_url(self):
+        return reverse_lazy('catalog:product_list_category', kwargs={'pk': self.object.category.pk})
+
 class ProductUpdateView(UpdateView):
     """Контроллер редактирования продукта"""
     model = Product
     form_class = ProductForm
     # success_url = reverse_lazy('catalog:product_list')
     success_url = reverse_lazy('catalog:product_list_category')
+
+    def get_success_url(self):
+        return reverse_lazy('catalog:product_list_category', kwargs={'pk': self.object.category.pk})
 
     def get_context_data(self, **kwargs):  # формирование формсета с версиями продукта
         context_data = super().get_context_data(**kwargs)
