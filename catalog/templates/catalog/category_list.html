@@ -11,7 +11,7 @@
             </div>
             <div class="card-body">
                 {{ object.description|truncatechars:30 }}<br>
-                <a href="{% url 'catalog:product_list' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-primary">Товары</a>
+                <a href="{% url 'catalog:product_list_category' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-primary">Товары</a>
             </div>
         </div>
     </div>
