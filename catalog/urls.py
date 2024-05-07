@@ -16,8 +16,8 @@ urlpatterns = [
     path('edit/<int:pk>/', ProductUpdateView.as_view(), name='product_update'),
     path('delete/<int:pk>/', ProductDeleteView.as_view(), name='product_delete'),
 
-    path('products/', ProductListView.as_view(), name='product_list'),  # Добавленный путь для product_list
-    path('<int:pk>/products/', ProductListView.as_view(), name='product_list_category'),  # Переименованный путь
+    path('products/', ProductListView.as_view(), name='product_list'),
+    path('<int:pk>/products/', ProductListView.as_view(), name='product_list_category'),
 
     path('create/', BlogCreateView.as_view(), name='create'),
     path('blog_list/', BlogListView.as_view(), name='blog_list'),
