@@ -1,8 +1,10 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import inlineformset_factory
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, TemplateView, DetailView, CreateView, UpdateView, DeleteView
 from pytils.translit import slugify
+from django.views import View
 
 from catalog.forms import ProductForm, VersionForm
 from catalog.models import Product, Category, Blog, Version
@@ -13,6 +15,14 @@ class CategoryListView(ListView):
     extra_context = {
         'title': 'Доступные категории товаров'
     }
+
+class AccessRightsMixinView(View):
+    """Миксин ограничения доступа для неавторизованных пользователей"""
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('catalog:access_error')
+        return super().dispatch(request, *args, **kwargs)
 
 class ContactsPageView(TemplateView):
     template_name = 'catalog/contacts.html'
@@ -45,22 +55,33 @@ class ProductDetailView(DetailView):
         model = Product
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     """Контроллер создания продукта"""
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:product_list_category')
     # success_url = reverse_lazy('catalog:product_list_category', kwargs={'pk': self.object.category.pk})
 
+    login_url = '/users/register/'
+
+    def form_valid(self, form):
+        product = form.save()
+        user = self.request.user
+        product.owner = user
+        product.save()
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy('catalog:product_list_category', kwargs={'pk': self.object.category.pk})
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """Контроллер редактирования продукта"""
     model = Product
     form_class = ProductForm
     # success_url = reverse_lazy('catalog:product_list')
     success_url = reverse_lazy('catalog:product_list_category')
+
+    login_url = '/users/register/'
 
     def get_success_url(self):
         return reverse_lazy('catalog:product_list_category', kwargs={'pk': self.object.category.pk})
@@ -89,10 +110,11 @@ class ProductUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     """Контроллер удаления продукта"""
     model = Product
     success_url = reverse_lazy('catalog:product_list')
+    login_url = '/users/register/'
 
 class BlogCreateView(CreateView):
     model = Blog
@@ -146,6 +168,9 @@ class BlogUpdateView(UpdateView):
 class BlogDeleteView(DeleteView):
     model = Blog
     success_url = reverse_lazy('catalog:blog_list')
+
+
+
 
 
 

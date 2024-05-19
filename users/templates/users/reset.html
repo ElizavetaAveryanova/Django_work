@@ -1,0 +1,17 @@
+{% extends 'catalog/base.html' %}
+
+{% block content %}
+<div class="col-12">
+    <form class='row' method="post" enctype="multipart/form-data">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    {% csrf_token %}
+                    <input class="text" name="mail" placeholder="Введите почту">
+                    <button type="submit" class="btn btn-primary">Восстановить
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
