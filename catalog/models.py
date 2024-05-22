@@ -29,6 +29,7 @@ class Product(models.Model):
     price = models.PositiveIntegerField(verbose_name='Цена за покупку')
     created_at = models.DateField(auto_now_add=True, **NULLABLE, verbose_name='Дата создания')
     updated_at = models.DateField(auto_now=True, **NULLABLE, verbose_name='Дата последнего изменения')
+    is_published = models.BooleanField(default=False)
 
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Владелец', **NULLABLE)
 
@@ -39,6 +40,12 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'продукт'
         verbose_name_plural = 'продукты'
+        ordering = ('name',)
+        permissions = [
+            ('can_edit_category', 'Can edit category'),
+            ('can_edit_description', 'Can edit description'),
+            ('can_change_published', 'Can change publishing'),
+        ]
 
 
 class Blog(models.Model):
