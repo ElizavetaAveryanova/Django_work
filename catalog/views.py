@@ -9,13 +9,16 @@ from django.core.exceptions import PermissionDenied
 
 from catalog.forms import ProductForm, VersionForm, ProductModeratorForm
 from catalog.models import Product, Category, Blog, Version
-
+from catalog.services import get_cashed_category_list
 
 class CategoryListView(ListView):
     model = Category
     extra_context = {
         'title': 'Доступные категории товаров'
     }
+
+    def get_queryset(self):
+        return get_cashed_category_list()
 
 class AccessRightsMixinView(View):
     """Миксин ограничения доступа для неавторизованных пользователей"""
